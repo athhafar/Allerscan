@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+
+<html lang="id"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_stack" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet"/><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "outline-variant": "#bdcabf", "tertiary-container": "#a36700", "surface-container-highest": "#dce2f7", "inverse-surface": "#293040", "background": "#f9f9ff", "primary": "#006a43", "on-secondary-container": "#fffbff", "surface-container-low": "#f1f3ff", "on-secondary-fixed": "#410004", "on-primary": "#ffffff", "surface-bright": "#f9f9ff", "error": "#ba1a1a", "tertiary": "#825100", "on-error": "#ffffff", "surface-tint": "#006c44", "primary-fixed-dim": "#71dba2", "secondary-container": "#da3437", "secondary": "#b61722", "on-error-container": "#93000a", "surface-container": "#e9edff", "on-secondary": "#ffffff", "on-tertiary-fixed-variant": "#653e00", "primary-fixed": "#8df8bd", "on-tertiary-container": "#fffbff", "on-tertiary-fixed": "#2a1700", "secondary-fixed-dim": "#ffb3ad", "outline": "#6e7a71", "on-tertiary": "#ffffff", "on-surface": "#141b2b", "on-primary-container": "#f6fff6", "tertiary-fixed": "#ffddb8", "error-container": "#ffdad6", "surface-container-lowest": "#ffffff", "primary-container": "#008655", "on-surface-variant": "#3e4941", "inverse-on-surface": "#edf0ff", "surface": "#f9f9ff", "surface-variant": "#dce2f7", "secondary-fixed": "#ffdad7", "tertiary-fixed-dim": "#ffb95f", "on-background": "#141b2b", "on-secondary-fixed-variant": "#930013", "surface-container-high": "#e1e8fd", "on-primary-fixed-variant": "#005232", "inverse-primary": "#71dba2", "on-primary-fixed": "#002112", "surface-dim": "#d3daef" }, borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, spacing: { "space-sm": "0.5rem", "space-xs": "0.25rem", "space-lg": "1.5rem", "margin": "1.25rem", "space-md": "1rem", "space-xl": "2rem", "gutter": "1rem" }, fontFamily: { "headline-sm": ["Inter"], "body-lg": ["Inter"], "caption": ["Inter"], "label-sm": ["Inter"], "body-md-medium": ["Inter"], "body-md": ["Inter"], "headline-lg": ["Inter"], "headline-md": ["Inter"], "label-md": ["Inter"] }, fontSize: { "headline-sm": ["18px", { "lineHeight": "24px", "fontWeight": "600" }], "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }], "caption": ["12px", { "lineHeight": "16px", "fontWeight": "400" }], "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }], "body-md-medium": ["14px", { "lineHeight": "20px", "fontWeight": "500" }], "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }], "headline-lg": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "headline-md": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.005em", "fontWeight": "600" }], "label-md": ["14px", { "lineHeight": "20px", "fontWeight": "600" }] } } } };</script><style>@layer base{html,body{width:100%;margin:0;padding:0;background-color:#f9f9ff;}body{overscroll-behavior-y:none;-webkit-tap-highlight-color:transparent;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style></head><body class="bg-surface font-body-md text-body-md text-on-surface antialiased min-h-screen flex flex-col selection:bg-primary-fixed selection:text-on-primary-fixed"><header class="fixed top-0 inset-x-0 z-50 bg-surface/85 backdrop-blur-xl pt-safe shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-space-sm flex items-center justify-between"><div class="flex items-center gap-space-xs"><button aria-label="Kembali" class="w-11 h-11 flex items-center justify-center text-on-surface rounded-full hover:bg-surface-container-high transition-colors" onclick="history.back()" type="button"><span class="material-symbols-outlined text-[24px]">arrow_back</span></button><div class="flex items-center gap-space-xs"><img alt="AllerScan Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1UQIF7Z4Ibm8uF0_oyDSNAXsuqNGRq0P2hmVGl8tKnYoF4il3l-LdJ_s_MFmOLvEcwpfPeAqoutWX9O5kVFmlZdUYkf-puwoAofIGCmvRV-L7aUZenxg_A9t9-3khjlVkZdVY2p_IjZCb9b60osM4z-COnZe0Yx8ar0CjBDQqtLQaFM10zQLfXPXkLZCaAp_4gWIWi662lhkgfog_jotwTCixnF8HeNAEYtMuPDvIJMARLcFv-yDvJlmUk"/><h1 class="text-headline-sm font-headline-sm text-on-surface tracking-tight truncate max-w-[200px]">Kelola Alergen Pengguna</h1></div></div><div class="flex items-center pr-space-xs"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex-1 flex flex-col relative w-full pt-16 pb-safe bg-surface min-h-screen"><div class="flex flex-col w-full px-margin pb-space-xl">
+<div class="flex items-center gap-space-sm pt-space-md pb-space-sm">
+<div class="flex-1 h-1.5 rounded-full bg-primary"></div>
+<div class="w-8 h-1.5 rounded-full bg-surface-container-high"></div>
+<div class="w-8 h-1.5 rounded-full bg-surface-container-high"></div>
+<span class="text-caption font-caption text-outline">Langkah 1/3</span>
+</div>
+<div class="flex flex-col gap-space-xs mt-space-sm mb-space-lg">
+<div class="inline-flex items-center gap-space-xs self-start px-space-sm py-1 rounded-full bg-primary-fixed text-on-primary-fixed">
+<span class="material-symbols-outlined text-[16px]">health_and_safety</span>
+<span class="text-caption font-caption font-semibold">Personalisasi Cerdas</span>
+</div>
+<h2 class="text-headline-md font-headline-md text-on-surface">Profil Alergen Kamu</h2>
+<p class="text-body-md font-body-md text-on-surface-variant">Pilih bahan makanan yang memicu alergi kamu untuk perlindungan personal saat memindai produk.</p>
+</div>
+<div class="relative w-full rounded-xl bg-surface-container-lowest p-space-md shadow-sm mb-space-lg overflow-hidden">
+<div class="flex items-center gap-space-md">
+<div class="relative w-16 h-16 shrink-0 rounded-lg overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="A bright warm aesthetic photo of clean organic ingredients like nuts oats and milk bottles placed on a sunlit kitchen table with soft green leafy decor" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBon681e2q56u74Sh_s9XpOnPkrdpQfeJIAAGd2cCjuL6_axogcc4Dk9xqzNJyNhsy8Pu9kTBwCeNDA3QjvT4RjnLEUByTuSXm9co31Fdc1THN_VN_TUnwIN2Jab3Vmyv2GaOIuNK29u5SYAoO410bbk0BFKlbaBM0sc8HSlr17HhvlQo-tGxHQ4WkLwyJzmQYU99cmXoXkN8BMaVva4lushAwzVTVvq5hAbzqrFlHGSu70cdb1p1nk"/>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-1">
+<span class="text-label-md font-label-md text-on-surface">Filter Sensitivitas</span>
+<span class="material-symbols-outlined text-primary text-[18px]">verified</span>
+</div>
+<p class="text-caption font-caption text-on-surface-variant mt-0.5">Sistem akan otomatis memberi peringatan bahaya saat bahan terdeteksi pada kemasan.</p>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between mb-space-sm">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-primary text-[20px]">recommend</span>
+<h3 class="text-label-md font-label-md text-on-surface">Pilihan Alergen Populer</h3>
+</div>
+<span class="px-space-sm py-0.5 rounded-full bg-primary-fixed-dim/30 text-primary text-caption font-caption font-semibold" id="allergen-count-badge">4 Dipilih</span>
+</div>
+<div class="grid grid-cols-2 gap-space-sm mb-space-lg" id="allergen-grid">
+<button class="allergen-item relative flex items-center justify-between p-space-md rounded-xl transition-all text-left bg-primary-fixed/20 shadow-sm" data-allergen="Kacang" data-selected="true" type="button">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="w-9 h-9 rounded-full bg-primary-fixed flex items-center justify-center shrink-0 text-on-primary-fixed">
+<span class="material-symbols-outlined text-[20px]">nutrition</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="text-body-md-medium font-body-md-medium text-on-surface truncate">Kacang</span>
+<span class="text-caption font-caption text-primary">Peanuts</span>
+</div>
+</div>
+<div class="status-indicator w-6 h-6 rounded-full bg-primary text-on-primary flex items-center justify-center shrink-0 shadow-sm">
+<span class="material-symbols-outlined text-[16px]">check</span>
+</div>
+</button>
+<button class="allergen-item relative flex items-center justify-between p-space-md rounded-xl transition-all text-left bg-primary-fixed/20 shadow-sm" data-allergen="Susu" data-selected="true" type="button">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="w-9 h-9 rounded-full bg-primary-fixed flex items-center justify-center shrink-0 text-on-primary-fixed">
+<span class="material-symbols-outlined text-[20px]">local_cafe</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="text-body-md-medium font-body-md-medium text-on-surface truncate">Susu</span>
+<span class="text-caption font-caption text-primary">Dairy & Laktosa</span>
+</div>
+</div>
+<div class="status-indicator w-6 h-6 rounded-full bg-primary text-on-primary flex items-center justify-center shrink-0 shadow-sm">
+<span class="material-symbols-outlined text-[16px]">check</span>
+</div>
+</button>
+<button class="allergen-item relative flex items-center justify-between p-space-md rounded-xl transition-all text-left bg-surface-container-lowest shadow-sm" data-allergen="Telur" data-selected="false" type="button">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="w-9 h-9 rounded-full bg-surface-container flex items-center justify-center shrink-0 text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">egg</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="text-body-md-medium font-body-md-medium text-on-surface truncate">Telur</span>
+<span class="text-caption font-caption text-outline">Egg Albumin</span>
+</div>
+</div>
+<div class="status-indicator w-6 h-6 rounded-full bg-surface-container text-transparent flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[16px]">check</span>
+</div>
+</button>
+<button class="allergen-item relative flex items-center justify-between p-space-md rounded-xl transition-all text-left bg-primary-fixed/20 shadow-sm" data-allergen="Gluten" data-selected="true" type="button">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="w-9 h-9 rounded-full bg-primary-fixed flex items-center justify-center shrink-0 text-on-primary-fixed">
+<span class="material-symbols-outlined text-[20px]">grain</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="text-body-md-medium font-body-md-medium text-on-surface truncate">Gluten</span>
+<span class="text-caption font-caption text-primary">Gandum / Tepung</span>
+</div>
+</div>
+<div class="status-indicator w-6 h-6 rounded-full bg-primary text-on-primary flex items-center justify-center shrink-0 shadow-sm">
+<span class="material-symbols-outlined text-[16px]">check</span>
+</div>
+</button>
+<button class="allergen-item relative flex items-center justify-between p-space-md rounded-xl transition-all text-left bg-surface-container-lowest shadow-sm" data-allergen="Seafood" data-selected="false" type="button">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="w-9 h-9 rounded-full bg-surface-container flex items-center justify-center shrink-0 text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">set_meal</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="text-body-md-medium font-body-md-medium text-on-surface truncate">Seafood</span>
+<span class="text-caption font-caption text-outline">Ikan Laut</span>
+</div>
+</div>
+<div class="status-indicator w-6 h-6 rounded-full bg-surface-container text-transparent flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[16px]">check</span>
+</div>
+</button>
+<button class="allergen-item relative flex items-center justify-between p-space-md rounded-xl transition-all text-left bg-surface-container-lowest shadow-sm" data-allergen="Kedelai" data-selected="false" type="button">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="w-9 h-9 rounded-full bg-surface-container flex items-center justify-center shrink-0 text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">eco</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="text-body-md-medium font-body-md-medium text-on-surface truncate">Kedelai</span>
+<span class="text-caption font-caption text-outline">Soy & Lecithin</span>
+</div>
+</div>
+<div class="status-indicator w-6 h-6 rounded-full bg-surface-container text-transparent flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[16px]">check</span>
+</div>
+</button>
+<button class="allergen-item relative flex items-center justify-between p-space-md rounded-xl transition-all text-left bg-surface-container-lowest shadow-sm" data-allergen="Wijen" data-selected="false" type="button">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="w-9 h-9 rounded-full bg-surface-container flex items-center justify-center shrink-0 text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">bubble_chart</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="text-body-md-medium font-body-md-medium text-on-surface truncate">Wijen</span>
+<span class="text-caption font-caption text-outline">Sesame Seed</span>
+</div>
+</div>
+<div class="status-indicator w-6 h-6 rounded-full bg-surface-container text-transparent flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[16px]">check</span>
+</div>
+</button>
+<button class="allergen-item relative flex items-center justify-between p-space-md rounded-xl transition-all text-left bg-primary-fixed/20 shadow-sm" data-allergen="Udang" data-selected="true" type="button">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="w-9 h-9 rounded-full bg-primary-fixed flex items-center justify-center shrink-0 text-on-primary-fixed">
+<span class="material-symbols-outlined text-[20px]">phishing</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="text-body-md-medium font-body-md-medium text-on-surface truncate">Udang</span>
+<span class="text-caption font-caption text-primary">Crustacea</span>
+</div>
+</div>
+<div class="status-indicator w-6 h-6 rounded-full bg-primary text-on-primary flex items-center justify-center shrink-0 shadow-sm">
+<span class="material-symbols-outlined text-[16px]">check</span>
+</div>
+</button>
+</div>
+<div class="flex flex-col gap-space-xs mb-space-lg">
+<label class="text-label-md font-label-md text-on-surface flex items-center gap-1.5" for="custom-allergen-input">
+<span class="material-symbols-outlined text-primary text-[20px]">add_circle</span>
+      Tambah Alergen Khusus
+    </label>
+<div class="relative flex items-center bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden focus-within:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined absolute left-space-md text-outline text-[20px]">search</span>
+<input class="w-full h-12 pl-11 pr-24 bg-transparent text-body-md font-body-md text-on-surface placeholder:text-outline outline-none" id="custom-allergen-input" placeholder="Misal: Seledri, Pewarna Kuning FCF..." type="text"/>
+<button class="absolute right-space-xs h-9 px-space-md rounded-lg bg-surface-container-high text-on-surface font-label-sm text-label-sm hover:bg-primary hover:text-on-primary transition-colors flex items-center gap-1" id="add-custom-btn" type="button">
+<span class="material-symbols-outlined text-[16px]">add</span>
+        Tambah
+      </button>
+</div>
+<div class="flex flex-wrap gap-space-xs mt-space-xs empty:hidden" id="custom-chips-container"></div>
+</div>
+<div class="rounded-xl bg-surface-container-low p-space-md flex items-start gap-space-sm mb-space-xl">
+<span class="material-symbols-outlined text-tertiary-container text-[20px] shrink-0 mt-0.5">info</span>
+<p class="text-caption font-caption text-on-surface-variant leading-relaxed">
+      Kamu dapat mengubah daftar alergen ini kapan saja di tab <strong class="text-on-surface">Profil</strong>. Informasi ini disimpan di perangkat demi privasimu.
+    </p>
+</div>
+<div class="sticky bottom-4 z-20 w-full mt-auto pt-space-xs">
+<button class="w-full h-12 rounded-xl bg-primary text-on-primary text-label-md font-label-md flex items-center justify-center gap-space-sm shadow-md active:scale-[0.99] transition-transform" id="save-profile-btn" type="button">
+<span class="material-symbols-outlined text-[20px]">shield</span>
+<span id="save-btn-label">Simpan Profil (4 Dipilih)</span>
+</button>
+</div>
+</div>
+<script>
+  (function() {
+    const allergenGrid = document.getElementById('allergen-grid');
+    const countBadge = document.getElementById('allergen-count-badge');
+    const saveBtnLabel = document.getElementById('save-btn-label');
+    const inputField = document.getElementById('custom-allergen-input');
+    const addBtn = document.getElementById('add-custom-btn');
+    const customChipsContainer = document.getElementById('custom-chips-container');
+    const saveBtn = document.getElementById('save-profile-btn');
+
+    function updateCount() {
+      const selectedItems = allergenGrid.querySelectorAll('.allergen-item[data-selected="true"]');
+      const customChips = customChipsContainer.querySelectorAll('[data-custom="true"]');
+      const total = selectedItems.length + customChips.length;
+
+      countBadge.textContent = total + ' Dipilih';
+      saveBtnLabel.textContent = 'Simpan Profil (' + total + ' Dipilih)';
+    }
+
+    allergenGrid.addEventListener('click', function(e) {
+      const button = e.target.closest('.allergen-item');
+      if (!button) return;
+
+      const isSelected = button.getAttribute('data-selected') === 'true';
+      const iconWrap = button.querySelector('div:first-child > div:first-child');
+      const statusIndicator = button.querySelector('.status-indicator');
+
+      if (isSelected) {
+        button.setAttribute('data-selected', 'false');
+        button.classList.remove('bg-primary-fixed/20');
+        button.classList.add('bg-surface-container-lowest');
+        iconWrap.classList.remove('bg-primary-fixed', 'text-on-primary-fixed');
+        iconWrap.classList.add('bg-surface-container', 'text-on-surface-variant');
+        statusIndicator.classList.remove('bg-primary', 'text-on-primary');
+        statusIndicator.classList.add('bg-surface-container', 'text-transparent');
+      } else {
+        button.setAttribute('data-selected', 'true');
+        button.classList.remove('bg-surface-container-lowest');
+        button.classList.add('bg-primary-fixed/20');
+        iconWrap.classList.remove('bg-surface-container', 'text-on-surface-variant');
+        iconWrap.classList.add('bg-primary-fixed', 'text-on-primary-fixed');
+        statusIndicator.classList.remove('bg-surface-container', 'text-transparent');
+        statusIndicator.classList.add('bg-primary', 'text-on-primary');
+      }
+      updateCount();
+    });
+
+    function addCustomAllergen() {
+      const value = inputField.value.trim();
+      if (!value) return;
+
+      const chip = document.createElement('div');
+      chip.setAttribute('data-custom', 'true');
+      chip.className = 'flex items-center gap-1.5 px-space-sm py-1 rounded-full bg-primary text-on-primary text-caption font-caption animate-fadeIn';
+      chip.innerHTML = '<span class="material-symbols-outlined text-[14px]">check</span><span>' + value + '</span><button type="button" aria-label="Hapus" class="remove-chip flex items-center justify-center ml-0.5"><span class="material-symbols-outlined text-[14px] hover:opacity-80">close</span></button>';
+
+      chip.querySelector('.remove-chip').addEventListener('click', function(ev) {
+        ev.stopPropagation();
+        chip.remove();
+        updateCount();
+      });
+
+      customChipsContainer.appendChild(chip);
+      inputField.value = '';
+      updateCount();
+    }
+
+    addBtn.addEventListener('click', addCustomAllergen);
+    inputField.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        addCustomAllergen();
+      }
+    });
+
+    saveBtn.addEventListener('click', function() {
+      const originalText = saveBtnLabel.textContent;
+      saveBtnLabel.textContent = 'Profil Berhasil Disimpan!';
+      saveBtn.classList.remove('bg-primary');
+      saveBtn.classList.add('bg-primary-container');
+      setTimeout(function() {
+        saveBtnLabel.textContent = originalText;
+        saveBtn.classList.remove('bg-primary-container');
+        saveBtn.classList.add('bg-primary');
+      }, 1800);
+    });
+  })();
+</script></main></body></html>
