@@ -1,6 +1,0 @@
-{
-  "name": "AllerScan",
-  "description": "Aplikasi pendeteksi alergen pada makanan kemasan offline berbasis OCR dan sistem klasifikasi klinis risiko (Tinggi, Sedang, Aman).",
-  "requestFramePermissions": ["camera"],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
-}
