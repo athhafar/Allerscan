@@ -32,6 +32,10 @@ buildTypes {
         // TODO: Ganti dengan signing config rilis kamu sendiri.
         // Sementara pakai debug key supaya `flutter run --release` tetap jalan.
         signingConfig = signingConfigs.getByName("debug")
+        proguardFiles(
+            getDefaultProguardFile("proguard-android.txt"),
+            "proguard-rules.pro"
+        )
     }
 }
 }
