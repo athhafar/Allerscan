@@ -14,22 +14,29 @@ class AppBottomNav extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: AppTheme.surfaceContainerLowest,
-        border: Border(
-          top: BorderSide(color: Color(0xFFEEEEEE), width: 1),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 16,
+            offset: const Offset(0, -4),
+          ),
+        ],
+        border: const Border(
+          top: BorderSide(color: Color(0xFFF0F0F0), width: 1),
         ),
       ),
       child: SafeArea(
         top: false,
-        child: SizedBox(
-          height: 64,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _buildNavItem(0, Icons.qr_code_scanner, 'Scan'),
-              _buildNavItem(1, Icons.history, 'Riwayat'),
-              _buildNavItem(2, Icons.account_circle, 'Profil'),
+              _buildNavItem(0, Icons.qr_code_scanner_rounded, 'Scan'),
+              _buildNavItem(1, Icons.history_rounded, 'Riwayat'),
+              _buildNavItem(2, Icons.account_circle_outlined, 'Profil'),
             ],
           ),
         ),
@@ -39,28 +46,38 @@ class AppBottomNav extends StatelessWidget {
 
   Widget _buildNavItem(int index, IconData icon, String label) {
     final isSelected = currentIndex == index;
-    final color = isSelected ? AppTheme.primary : AppTheme.outline;
 
     return InkWell(
       onTap: () => onTap(index),
-      borderRadius: BorderRadius.circular(12),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      borderRadius: BorderRadius.circular(20),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: EdgeInsets.symmetric(
+          horizontal: isSelected ? 22 : 14,
+          vertical: 6,
+        ),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? AppTheme.primaryFixed.withValues(alpha: 0.35)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(20),
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
               icon,
-              size: 24,
-              color: color,
+              size: 22,
+              color: isSelected ? AppTheme.primary : AppTheme.outline,
             ),
-            const SizedBox(height: 2),
+            const SizedBox(height: 3),
             Text(
               label,
               style: TextStyle(
-                fontSize: 12,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                color: color,
+                fontSize: 11,
+                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                color: isSelected ? AppTheme.primary : AppTheme.outline,
+                letterSpacing: -0.1,
               ),
             ),
           ],

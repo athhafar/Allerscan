@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/profile_provider.dart';
+import '../services/storage_service.dart';
+import '../services/supabase_service.dart';
 import '../theme/app_theme.dart';
+import '../widgets/supabase_config_dialog.dart';
+import 'auth_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   final bool isOnboarding;
@@ -19,6 +23,46 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   final TextEditingController _customController = TextEditingController();
+  List<Map<String, String>> _suggestions = [];
+
+  Future<void> _submitAddAllergen(ProfileProvider profile, String val) async {
+    final clean = val.trim();
+    if (clean.isEmpty) return;
+
+    final result = await profile.validateAndAddAllergen(clean);
+    if (!mounted) return;
+
+    _customController.clear();
+    setState(() {
+      _suggestions = [];
+    });
+
+    final isSuccess = result['success'] == true;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            Icon(
+              isSuccess ? Icons.check_circle_outline : Icons.cancel_outlined,
+              color: Colors.white,
+              size: 20,
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                result['message'] as String,
+                style: const TextStyle(fontSize: 12),
+              ),
+            ),
+          ],
+        ),
+        backgroundColor: isSuccess ? const Color(0xFF006A43) : AppTheme.secondary,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        duration: const Duration(seconds: 4),
+      ),
+    );
+  }
 
   IconData _getAllergenIcon(String iconName) {
     switch (iconName) {
@@ -38,6 +82,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
         return Icons.bubble_chart_outlined;
       case 'phishing':
         return Icons.phishing;
+      case 'science':
+        return Icons.science_outlined;
+      case 'help':
+        return Icons.help_outline;
       default:
         return Icons.shield_outlined;
     }
@@ -70,8 +118,35 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           ],
         ),
-        actions: const [
-          Padding(
+        actions: [
+          IconButton(
+            icon: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                const Icon(Icons.cloud_sync_outlined, color: AppTheme.primary),
+                Positioned(
+                  top: -2,
+                  right: -2,
+                  child: Container(
+                    width: 8,
+                    height: 8,
+                    decoration: BoxDecoration(
+                      color: SupabaseService.isConfigured ? Colors.green : Colors.orange,
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            tooltip: 'Koneksi Supabase',
+            onPressed: () {
+              final storage = Provider.of<StorageService>(context, listen: false);
+              SupabaseConfigDialog.show(context, storage).then((_) {
+                setState(() {});
+              });
+            },
+          ),
+          const Padding(
             padding: EdgeInsets.only(right: 16),
             child: CircleAvatar(
               radius: 16,
@@ -88,6 +163,214 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Supabase Cloud Sync Banner
+                  InkWell(
+                    onTap: () {
+                      final storage = Provider.of<StorageService>(context, listen: false);
+                      SupabaseConfigDialog.show(context, storage).then((_) {
+                        setState(() {});
+                      });
+                    },
+                    borderRadius: BorderRadius.circular(12),
+                    child: Container(
+                      margin: const EdgeInsets.only(bottom: 14),
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                      decoration: BoxDecoration(
+                        color: SupabaseService.isConfigured
+                            ? Colors.green.withValues(alpha: 0.08)
+                            : Colors.orange.withValues(alpha: 0.08),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: SupabaseService.isConfigured
+                              ? Colors.green.withValues(alpha: 0.3)
+                              : Colors.orange.withValues(alpha: 0.3),
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.cloud_done_outlined,
+                            size: 20,
+                            color: SupabaseService.isConfigured ? Colors.green[700] : Colors.orange[700],
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  SupabaseService.isConfigured
+                                      ? 'Tersambung ke Supabase (foodalert-db)'
+                                      : 'Supabase Belum Dikonfigurasi',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                    color: SupabaseService.isConfigured ? Colors.green[900] : Colors.orange[900],
+                                  ),
+                                ),
+                                Text(
+                                  SupabaseService.isConfigured
+                                      ? 'Profil & riwayat scan otomatis tersinkron ke cloud'
+                                      : 'Ketuk untuk memasukkan Anon Key & hubungkan database',
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    color: SupabaseService.isConfigured ? Colors.green[700] : Colors.orange[700],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Icon(
+                            Icons.chevron_right,
+                            size: 18,
+                            color: SupabaseService.isConfigured ? Colors.green : Colors.orange,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  // User Account Card (Supabase Auth / Guest)
+                  Container(
+                    margin: const EdgeInsets.only(bottom: 16),
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                    decoration: BoxDecoration(
+                      color: AppTheme.surfaceContainerLowest,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: const Color(0xFFEEEEEE)),
+                    ),
+                    child: Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 20,
+                          backgroundColor: SupabaseService.isAuthenticated
+                              ? AppTheme.primary
+                              : AppTheme.surfaceContainerHigh,
+                          child: Icon(
+                            SupabaseService.isAuthenticated ? Icons.person : Icons.person_outline,
+                            color: SupabaseService.isAuthenticated ? Colors.white : AppTheme.outline,
+                            size: 22,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Flexible(
+                                    child: Text(
+                                      SupabaseService.effectiveUserName,
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                        color: AppTheme.onSurface,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                    decoration: BoxDecoration(
+                                      color: SupabaseService.isAuthenticated
+                                          ? AppTheme.primaryContainer.withValues(alpha: 0.15)
+                                          : AppTheme.surfaceContainer,
+                                      borderRadius: BorderRadius.circular(6),
+                                    ),
+                                    child: Text(
+                                      SupabaseService.isAuthenticated ? 'Terhubung' : 'Tamu',
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w600,
+                                        color: SupabaseService.isAuthenticated
+                                            ? AppTheme.primary
+                                            : AppTheme.outline,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                SupabaseService.effectiveUserEmail.isNotEmpty
+                                    ? SupabaseService.effectiveUserEmail
+                                    : 'Mode Tamu / Offline',
+                                style: const TextStyle(
+                                  fontSize: 11,
+                                  color: AppTheme.onSurfaceVariant,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        if (SupabaseService.isAuthenticated)
+                          IconButton(
+                            icon: const Icon(Icons.logout, size: 20, color: AppTheme.secondary),
+                            tooltip: 'Keluar Akun',
+                            onPressed: () async {
+                              final storage = Provider.of<StorageService>(context, listen: false);
+                              final navigator = Navigator.of(context);
+                              final confirm = await showDialog<bool>(
+                                context: context,
+                                builder: (ctx) => AlertDialog(
+                                  title: const Text('Keluar dari Akun?'),
+                                  content: const Text(
+                                    'Anda akan keluar dari sesi akun Supabase saat ini.',
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Navigator.of(ctx).pop(false),
+                                      child: const Text('Batal'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () => Navigator.of(ctx).pop(true),
+                                      style: TextButton.styleFrom(
+                                        foregroundColor: AppTheme.secondary,
+                                      ),
+                                      child: const Text('Keluar'),
+                                    ),
+                                  ],
+                                ),
+                              );
+
+                              if (confirm == true) {
+                                await SupabaseService.signOut();
+                                if (!mounted) return;
+                                navigator.pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                    builder: (_) => AuthScreen(storageService: storage),
+                                  ),
+                                  (route) => false,
+                                );
+                              }
+                            },
+                          )
+                        else
+                          TextButton(
+                            onPressed: () {
+                              final storage = Provider.of<StorageService>(context, listen: false);
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => AuthScreen(storageService: storage),
+                                ),
+                              );
+                            },
+                            child: const Text(
+                              'Masuk',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: AppTheme.primary,
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+
                   // Progress indicator if onboarding
                   if (widget.isOnboarding) ...[
                     Row(
@@ -267,7 +550,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       crossAxisCount: 2,
                       crossAxisSpacing: 10,
                       mainAxisSpacing: 10,
-                      childAspectRatio: 2.1,
+                      childAspectRatio: 1.95,
                     ),
                     itemCount: profile.allAllergens.length,
                     itemBuilder: (context, index) {
@@ -357,20 +640,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   const SizedBox(height: 20),
 
-                  // Custom Allergen Section
+                  // Custom Allergen Search & Validation Section
                   const Row(
                     children: [
-                      Icon(Icons.add_circle_outline, color: AppTheme.primary, size: 20),
+                      Icon(Icons.verified_outlined, color: AppTheme.primary, size: 20),
                       SizedBox(width: 6),
-                      Text(
-                        'Tambah Alergen Khusus',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: AppTheme.onSurface,
+                      Expanded(
+                        child: Text(
+                          'Cari & Tambah Alergen (Database BPOM/Codex)',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: AppTheme.onSurface,
+                          ),
                         ),
                       ),
                     ],
+                  ),
+                  const SizedBox(height: 4),
+                  const Text(
+                    'Hanya bahan yang terdaftar dalam database alergen resmi yang akan diterima sistem.',
+                    style: TextStyle(fontSize: 11, color: AppTheme.outline),
                   ),
                   const SizedBox(height: 8),
                   Row(
@@ -379,7 +669,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         child: TextField(
                           controller: _customController,
                           decoration: InputDecoration(
-                            hintText: 'Misal: Seledri, Pewarna Kuning FCF...',
+                            hintText: 'Misal: Almond, Whey, Wijen, Terasi...',
                             hintStyle: const TextStyle(color: AppTheme.outline, fontSize: 13),
                             prefixIcon: const Icon(Icons.search, size: 20, color: AppTheme.outline),
                             filled: true,
@@ -394,11 +684,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               borderSide: const BorderSide(color: Color(0xFFEEEEEE)),
                             ),
                           ),
+                          onChanged: (val) {
+                            setState(() {
+                              _suggestions = profile.searchDatabaseSuggestions(val);
+                            });
+                          },
                           onSubmitted: (val) {
-                            if (val.trim().isNotEmpty) {
-                              profile.addCustomAllergen(val);
-                              _customController.clear();
-                            }
+                            _submitAddAllergen(profile, val);
                           },
                         ),
                       ),
@@ -413,15 +705,69 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                         ),
                         onPressed: () {
-                          if (_customController.text.trim().isNotEmpty) {
-                            profile.addCustomAllergen(_customController.text);
-                            _customController.clear();
-                          }
+                          _submitAddAllergen(profile, _customController.text);
                         },
                         child: const Text('Tambah'),
                       ),
                     ],
                   ),
+
+                  // Suggestions from database
+                  if (_suggestions.isNotEmpty) ...[
+                    const SizedBox(height: 8),
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: AppTheme.surfaceContainerLow,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: AppTheme.outlineVariant.withValues(alpha: 0.5)),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Icon(Icons.lightbulb_outline, size: 14, color: AppTheme.primary),
+                              SizedBox(width: 6),
+                              Expanded(
+                                child: Text(
+                                  'Saran Bahan Terdaftar di Database (Ketuk untuk Menambahkan):',
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w600,
+                                    color: AppTheme.primary,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          Wrap(
+                            spacing: 6,
+                            runSpacing: 6,
+                            children: _suggestions.map((s) {
+                              return ActionChip(
+                                backgroundColor: AppTheme.surfaceContainerLowest,
+                                avatar: const Icon(Icons.check_circle_outline, size: 14, color: AppTheme.primary),
+                                label: Text(
+                                  '${s['term']} → ${s['groupLabel']}',
+                                  style: const TextStyle(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w500,
+                                    color: AppTheme.onSurface,
+                                  ),
+                                ),
+                                onPressed: () {
+                                  _submitAddAllergen(profile, s['term']!);
+                                },
+                              );
+                            }).toList(),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
 
                   // Custom chips
                   if (profile.customAllergens.isNotEmpty) ...[

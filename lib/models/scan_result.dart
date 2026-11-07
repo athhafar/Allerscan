@@ -82,6 +82,10 @@ class ScanResult {
   final int charCount;
   final bool isTextTooShort;
   final String? imagePath;
+  final List<String> cleanedIngredients;
+  final List<String> traceWarnings;
+  final String? aiSummary;
+  final List<String> flaggedIngredients;
 
   ScanResult({
     required this.id,
@@ -97,7 +101,51 @@ class ScanResult {
     required this.charCount,
     this.isTextTooShort = false,
     this.imagePath,
+    this.cleanedIngredients = const [],
+    this.traceWarnings = const [],
+    this.aiSummary,
+    this.flaggedIngredients = const [],
   });
+
+  ScanResult copyWith({
+    String? id,
+    String? productName,
+    String? brandOrCategory,
+    String? rawText,
+    String? normalizedText,
+    String? mainText,
+    String? traceText,
+    RiskLevel? riskLevel,
+    List<AllergenFinding>? findings,
+    DateTime? timestamp,
+    int? charCount,
+    bool? isTextTooShort,
+    String? imagePath,
+    List<String>? cleanedIngredients,
+    List<String>? traceWarnings,
+    String? aiSummary,
+    List<String>? flaggedIngredients,
+  }) {
+    return ScanResult(
+      id: id ?? this.id,
+      productName: productName ?? this.productName,
+      brandOrCategory: brandOrCategory ?? this.brandOrCategory,
+      rawText: rawText ?? this.rawText,
+      normalizedText: normalizedText ?? this.normalizedText,
+      mainText: mainText ?? this.mainText,
+      traceText: traceText ?? this.traceText,
+      riskLevel: riskLevel ?? this.riskLevel,
+      findings: findings ?? this.findings,
+      timestamp: timestamp ?? this.timestamp,
+      charCount: charCount ?? this.charCount,
+      isTextTooShort: isTextTooShort ?? this.isTextTooShort,
+      imagePath: imagePath ?? this.imagePath,
+      cleanedIngredients: cleanedIngredients ?? this.cleanedIngredients,
+      traceWarnings: traceWarnings ?? this.traceWarnings,
+      aiSummary: aiSummary ?? this.aiSummary,
+      flaggedIngredients: flaggedIngredients ?? this.flaggedIngredients,
+    );
+  }
 
   factory ScanResult.fromJson(Map<String, dynamic> json) {
     return ScanResult(
@@ -120,6 +168,19 @@ class ScanResult {
       charCount: json['charCount'] as int? ?? 0,
       isTextTooShort: json['isTextTooShort'] as bool? ?? false,
       imagePath: json['imagePath'] as String?,
+      cleanedIngredients: (json['cleanedIngredients'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          const [],
+      traceWarnings: (json['traceWarnings'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          const [],
+      aiSummary: json['aiSummary'] as String?,
+      flaggedIngredients: (json['flaggedIngredients'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          const [],
     );
   }
 
@@ -138,6 +199,10 @@ class ScanResult {
       'charCount': charCount,
       'isTextTooShort': isTextTooShort,
       'imagePath': imagePath,
+      'cleanedIngredients': cleanedIngredients,
+      'traceWarnings': traceWarnings,
+      'aiSummary': aiSummary,
+      'flaggedIngredients': flaggedIngredients,
     };
   }
 }

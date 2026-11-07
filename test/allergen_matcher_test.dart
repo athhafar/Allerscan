@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import '../lib/models/allergen_profile.dart';
-import '../lib/models/scan_result.dart';
-import '../lib/services/allergen_matcher.dart';
+import 'package:allerscan/models/allergen_profile.dart';
+import 'package:allerscan/models/scan_result.dart';
+import 'package:allerscan/services/allergen_matcher.dart';
 
 void main() {
   group('AllergenMatcher Core Tests', () {
@@ -70,7 +70,7 @@ void main() {
     });
 
     test('Case 1: "tepung terigu, gula, susu bubuk skim (2%), pasta kacang tanah" with [susu, kacang_tanah] -> TINGGI, 2 temuan', () {
-      final text = 'tepung terigu, gula, susu bubuk skim (2%), pasta kacang tanah';
+      const text = 'tepung terigu, gula, susu bubuk skim (2%), pasta kacang tanah';
       final result = AllergenMatcher.analyze(text, [milk, peanut]);
 
       expect(result.riskLevel, equals(RiskLevel.tinggi));
@@ -80,7 +80,7 @@ void main() {
     });
 
     test('Case 2: "air, kacang almond, garam" with [kacang_tanah] -> AMAN', () {
-      final text = 'air, kacang almond, garam';
+      const text = 'air, kacang almond, garam';
       final result = AllergenMatcher.analyze(text, [peanut]);
 
       expect(result.riskLevel, equals(RiskLevel.aman));
@@ -88,7 +88,7 @@ void main() {
     });
 
     test('Case 3: "air, gula. Diproduksi pada peralatan yang juga memproses kacang tanah dan udang" with [kacang_tanah, udang] -> SEDANG', () {
-      final text = 'air, gula. Diproduksi pada peralatan yang juga memproses kacang tanah dan udang';
+      const text = 'air, gula. Diproduksi pada peralatan yang juga memproses kacang tanah dan udang';
       final result = AllergenMatcher.analyze(text, [peanut, shrimp]);
 
       expect(result.riskLevel, equals(RiskLevel.sedang));
@@ -97,7 +97,7 @@ void main() {
     });
 
     test('Case 4: Empty text -> AMAN with isTextTooShort = true', () {
-      final text = '';
+      const text = '';
       final result = AllergenMatcher.analyze(text, [milk]);
 
       expect(result.riskLevel, equals(RiskLevel.aman));
@@ -105,7 +105,7 @@ void main() {
     });
 
     test('Case 5: OCR misread "kaseln" with [susu] -> TINGGI (Levenshtein distance 1 to kasein)', () {
-      final text = 'gula, minyak nabati, kaseln, garam';
+      const text = 'gula, minyak nabati, kaseln, garam';
       final result = AllergenMatcher.analyze(text, [milk]);
 
       expect(result.riskLevel, equals(RiskLevel.tinggi));
@@ -114,7 +114,7 @@ void main() {
     });
 
     test('Case 6: "kacang, garam" with [kacang_tanah] -> SEDANG (ambiguous keyword)', () {
-      final text = 'kacang, garam';
+      const text = 'kacang, garam';
       final result = AllergenMatcher.analyze(text, [peanut]);
 
       expect(result.riskLevel, equals(RiskLevel.sedang));

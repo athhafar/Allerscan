@@ -1,21 +1,30 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'providers/profile_provider.dart';
 import 'providers/history_provider.dart';
 import 'services/storage_service.dart';
+import 'services/supabase_service.dart';
 import 'theme/app_theme.dart';
+import 'screens/auth_screen.dart';
 import 'screens/profile_screen.dart';
 import 'screens/input_method_screen.dart';
 import 'screens/history_screen.dart';
+import 'screens/splash_screen.dart';
 import 'widgets/app_bottom_nav.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final storageService = await StorageService.init();
 
+  // Inisialisasi koneksi Supabase
+  await SupabaseService.init(storageService: storageService);
+
   runApp(
     MultiProvider(
       providers: [
+        Provider<StorageService>.value(value: storageService),
         ChangeNotifierProvider(create: (_) => ProfileProvider(storageService)),
         ChangeNotifierProvider(create: (_) => HistoryProvider(storageService)),
       ],
@@ -35,7 +44,7 @@ class AllerScanApp extends StatelessWidget {
       title: 'AllerScan',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
-      home: MainNavigationScaffold(storageService: storageService),
+      home: SplashScreen(storageService: storageService),
     );
   }
 }
@@ -52,6 +61,7 @@ class MainNavigationScaffold extends StatefulWidget {
 class _MainNavigationScaffoldState extends State<MainNavigationScaffold> {
   int _currentIndex = 0;
   bool _isOnboarding = false;
+  late final StreamSubscription<AuthState> _authSubscription;
 
   @override
   void initState() {
@@ -61,6 +71,26 @@ class _MainNavigationScaffoldState extends State<MainNavigationScaffold> {
       _isOnboarding = true;
       _currentIndex = 2; // Open Profile screen on step 1/3
     }
+
+    _authSubscription =
+        Supabase.instance.client.auth.onAuthStateChange.listen((data) {
+      final session = data.session;
+      final isGuest = widget.storageService.isGuestMode();
+      if (session == null && !isGuest && mounted) {
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(
+            builder: (_) => AuthScreen(storageService: widget.storageService),
+          ),
+          (route) => false,
+        );
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _authSubscription.cancel();
+    super.dispose();
   }
 
   void _onCompleteOnboarding() {

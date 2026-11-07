@@ -1,6 +1,7 @@
 import 'dart:math';
 import '../models/allergen_profile.dart';
 import '../models/scan_result.dart';
+import '../utils/uuid_util.dart';
 
 /// Pure Dart Allergen Matcher Engine
 /// Handles OCR text normalization, trace clause splitting, word-boundary keyword search,
@@ -250,10 +251,8 @@ class AllergenMatcher {
       if (foundInMain == null && foundInTrace == null && allergen.ambiguous.isNotEmpty) {
         for (final amb in allergen.ambiguous) {
           var res = findMatch(mainText, amb, isAmbiguous: true, allergenId: allergen.id);
-          var loc = 'main';
           if (res['matched'] != true && traceText.isNotEmpty) {
             res = findMatch(traceText, amb, isAmbiguous: true, allergenId: allergen.id);
-            loc = 'trace';
           }
 
           if (res['matched'] == true) {
@@ -292,7 +291,7 @@ class AllergenMatcher {
     }
 
     return ScanResult(
-      id: 'scan_${DateTime.now().millisecondsSinceEpoch}',
+      id: UuidUtil.generate(),
       productName: productName,
       brandOrCategory: brandOrCategory,
       rawText: ocrText,

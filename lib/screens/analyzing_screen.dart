@@ -1,10 +1,12 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../models/scan_result.dart';
 import '../providers/profile_provider.dart';
 import '../providers/history_provider.dart';
 import '../services/ocr_service.dart';
 import '../services/allergen_matcher.dart';
+import '../services/gemini_service.dart';
 import '../theme/app_theme.dart';
 import 'result_screen.dart';
 
@@ -28,7 +30,7 @@ class _AnalyzingScreenState extends State<AnalyzingScreen> with SingleTickerProv
   late AnimationController _pulseController;
   final IOcrService _ocrService = MlKitOcrService();
   bool _isCancelled = false;
-  int _currentStep = 1; // 1: Ekstraksi teks, 2: Pencocokan kamus, 3: Verifikasi jejak
+  int _currentStep = 1; // 1: OCR, 2: DB Matcher, 3: Gemini AI, 4: Verifikasi & Laporan
 
   @override
   void initState() {
@@ -52,35 +54,76 @@ class _AnalyzingScreenState extends State<AnalyzingScreen> with SingleTickerProv
     try {
       String text = widget.directText ?? '';
 
+      // Step 1: OCR
+      setState(() => _currentStep = 1);
       if (widget.imageFile != null && text.isEmpty) {
-        // Step 1: OCR
-        setState(() => _currentStep = 1);
         text = await _ocrService.readText(widget.imageFile!);
       }
 
       if (_isCancelled) return;
 
-      // Step 2: Matcher
+      // Step 2: Matcher dari Database Alergen
       setState(() => _currentStep = 2);
-      await Future.delayed(const Duration(milliseconds: 600));
-
-      if (_isCancelled) return;
-
-      // Step 3: Verification
-      setState(() => _currentStep = 3);
       await Future.delayed(const Duration(milliseconds: 400));
-
       if (_isCancelled || !mounted) return;
 
       final profile = Provider.of<ProfileProvider>(context, listen: false);
       final history = Provider.of<HistoryProvider>(context, listen: false);
 
-      final result = AllergenMatcher.analyze(
+      ScanResult result = AllergenMatcher.analyze(
         text,
         profile.activeAllergens,
         productName: widget.productName,
         imagePath: widget.imageFile?.path,
       );
+
+      // Step 3: Analisis Cerdas Gemini AI
+      setState(() => _currentStep = 3);
+      try {
+        final geminiResult = await GeminiService.analyze(
+          rawText: text,
+          activeAllergenLabels: profile.activeAllergens.map((a) => a.label).toList(),
+          productName: widget.productName,
+          imageFile: widget.imageFile,
+        );
+
+        if (geminiResult != null && !_isCancelled) {
+          // Perbarui nama produk jika sebelumnya default dan AI berhasil mendeteksi nama aslinya
+          String updatedProductName = result.productName;
+          if ((updatedProductName.isEmpty || updatedProductName == 'Produk tanpa nama') &&
+              geminiResult.productName != null &&
+              geminiResult.productName!.isNotEmpty &&
+              !geminiResult.productName!.toLowerCase().contains('tidak disebutkan')) {
+            updatedProductName = geminiResult.productName!;
+          }
+
+          // Harmonisasi level risiko: jika salah satu (DB atau Gemini) menemukan risiko tinggi, utamakan keselamatan
+          RiskLevel finalRisk = result.riskLevel;
+          if (geminiResult.riskLevel == RiskLevel.tinggi) {
+            finalRisk = RiskLevel.tinggi;
+          } else if (geminiResult.riskLevel == RiskLevel.sedang && finalRisk == RiskLevel.aman) {
+            finalRisk = RiskLevel.sedang;
+          }
+
+          result = result.copyWith(
+            productName: updatedProductName,
+            riskLevel: finalRisk,
+            cleanedIngredients: geminiResult.cleanedIngredients,
+            traceWarnings: geminiResult.traceWarnings,
+            aiSummary: geminiResult.aiSummary,
+            flaggedIngredients: geminiResult.flaggedIngredients,
+          );
+        }
+      } catch (geminiError) {
+        debugPrint('[AnalyzingScreen] Analisis Gemini dilewati/fallback: $geminiError');
+      }
+
+      if (_isCancelled) return;
+
+      // Step 4: Finalisasi Laporan
+      setState(() => _currentStep = 4);
+      await Future.delayed(const Duration(milliseconds: 300));
+      if (_isCancelled || !mounted) return;
 
       // Auto save to history
       await history.addScan(result);
@@ -188,8 +231,8 @@ class _AnalyzingScreenState extends State<AnalyzingScreen> with SingleTickerProv
                   height: 110,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: AppTheme.primaryFixed.withOpacity(0.2),
-                    border: Border.all(color: AppTheme.primary.withOpacity(0.3), width: 4),
+                    color: AppTheme.primaryFixed.withValues(alpha: 0.2),
+                    border: Border.all(color: AppTheme.primary.withValues(alpha: 0.3), width: 4),
                   ),
                   child: Center(
                     child: Container(
@@ -239,11 +282,13 @@ class _AnalyzingScreenState extends State<AnalyzingScreen> with SingleTickerProv
                 ),
                 child: Column(
                   children: [
-                    _buildStepRow(1, 'Ekstraksi teks bahan', _currentStep > 1, _currentStep == 1),
+                    _buildStepRow(1, 'Ekstraksi teks bahan (OCR)', _currentStep > 1, _currentStep == 1),
                     const Divider(color: Color(0xFFEEEEEE), height: 16),
-                    _buildStepRow(2, 'Mencocokkan kamus alergen', _currentStep > 2, _currentStep == 2),
+                    _buildStepRow(2, 'Mencocokkan basis data alergen', _currentStep > 2, _currentStep == 2),
                     const Divider(color: Color(0xFFEEEEEE), height: 16),
-                    _buildStepRow(3, 'Verifikasi peringatan jejak produksi', _currentStep > 3, _currentStep == 3),
+                    _buildStepRow(3, 'Analisis cerdas Google Gemini AI', _currentStep > 3, _currentStep == 3),
+                    const Divider(color: Color(0xFFEEEEEE), height: 16),
+                    _buildStepRow(4, 'Verifikasi & laporan keselamatan', _currentStep > 4, _currentStep == 4),
                   ],
                 ),
               ),
@@ -304,7 +349,7 @@ class _AnalyzingScreenState extends State<AnalyzingScreen> with SingleTickerProv
       statusWidget = Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
         decoration: BoxDecoration(
-          color: AppTheme.primaryFixed.withOpacity(0.5),
+          color: AppTheme.primaryFixed.withValues(alpha: 0.5),
           borderRadius: BorderRadius.circular(8),
         ),
         child: const Text('Proses', style: TextStyle(fontSize: 11, color: AppTheme.primary, fontWeight: FontWeight.w600)),

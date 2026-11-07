@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <defs>
+    <filter id="subtleGlow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#000000" flood-opacity="0.18"/>
+    </filter>
+  </defs>
+
+  <!-- Solid Background for Master Logo -->
+  <rect width="1024" height="1024" rx="224" fill="#006A43"/>
+
+  <!-- 4 Viewfinder Scanner Brackets -->
+  <g stroke="#8DF8BD" stroke-width="32" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <!-- Top-Left -->
+    <path d="M 280, 370 V 310 C 280, 290 296, 274 316, 274 H 376"/>
+    <!-- Top-Right -->
+    <path d="M 648, 274 H 708 C 728, 274 744, 290 744, 310 V 370"/>
+    <!-- Bottom-Left -->
+    <path d="M 280, 654 V 714 C 280, 734 296, 750 316, 750 H 376"/>
+    <!-- Bottom-Right -->
+    <path d="M 648, 750 H 708 C 728, 750 744, 734 744, 714 V 654"/>
+  </g>
+
+  <!-- Central Protective Medical Shield with Shadow -->
+  <g filter="url(#subtleGlow)">
+    <path d="M 370, 338 C 370, 338 512, 320 512, 320 C 512, 320 654, 338 654, 338 C 674, 340 688, 356 688, 376 V 496 C 688, 608 596, 686 512, 720 C 428, 686 336, 608 336, 496 V 376 C 336, 356 350, 340 370, 338 Z"
+          fill="#FFFFFF"/>
+  </g>
+
+  <!-- Inner Leaf & Verified Checkmark Motif -->
+  <!-- Leaf element (Purity / Allergen-free nature) -->
+  <path d="M 512, 400 C 564, 400 610, 436 618, 488 C 572, 496 524, 474 500, 432 C 496, 424 502, 400 512, 400 Z"
+        fill="#8DF8BD"/>
+
+  <!-- Checkmark (Clinical Safety & Verified) -->
+  <path d="M 426, 508 L 486, 568 L 598, 452"
+        fill="none"
+        stroke="#006A43"
+        stroke-width="36"
+        stroke-linecap="round"
+        stroke-linejoin="round"/>
+</svg>

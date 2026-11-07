@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/scan_result.dart';
 import '../providers/history_provider.dart';
+import '../services/storage_service.dart';
+import '../services/supabase_service.dart';
 import '../theme/app_theme.dart';
+import '../widgets/supabase_config_dialog.dart';
 import 'result_screen.dart';
 
 class HistoryScreen extends StatefulWidget {
@@ -57,6 +60,43 @@ class _HistoryScreenState extends State<HistoryScreen> {
           ],
         ),
         actions: [
+          IconButton(
+            icon: historyProvider.isSyncing
+                ? const SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(strokeWidth: 2, color: AppTheme.primary),
+                  )
+                : Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      const Icon(Icons.cloud_sync_outlined, color: AppTheme.primary),
+                      Positioned(
+                        top: -2,
+                        right: -2,
+                        child: Container(
+                          width: 8,
+                          height: 8,
+                          decoration: BoxDecoration(
+                            color: SupabaseService.isConfigured ? Colors.green : Colors.orange,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+            tooltip: 'Sinkronkan Supabase',
+            onPressed: () {
+              if (SupabaseService.isConfigured) {
+                historyProvider.syncWithSupabase();
+              } else {
+                final storage = Provider.of<StorageService>(context, listen: false);
+                SupabaseConfigDialog.show(context, storage).then((_) {
+                  setState(() {});
+                });
+              }
+            },
+          ),
           if (allHistory.isNotEmpty)
             IconButton(
               icon: const Icon(Icons.delete_sweep_outlined, color: AppTheme.outline),
@@ -66,7 +106,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   context: context,
                   builder: (ctx) => AlertDialog(
                     title: const Text('Hapus Semua Riwayat?'),
-                    content: const Text('Semua catatan scan pada perangkat akan dihapus secara permanen.'),
+                    content: const Text('Semua catatan scan pada perangkat dan Supabase akan dihapus.'),
                     actions: [
                       TextButton(
                         onPressed: () => Navigator.of(ctx).pop(),
@@ -87,55 +127,64 @@ class _HistoryScreenState extends State<HistoryScreen> {
             ),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Riwayat Scan',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w600,
-                        color: AppTheme.onSurface,
-                      ),
-                    ),
-                    SizedBox(height: 2),
-                    Text(
-                      'Daftar produk yang telah kamu periksa sebelumnya.',
-                      style: TextStyle(fontSize: 13, color: AppTheme.onSurfaceVariant),
-                    ),
-                  ],
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: AppTheme.surfaceContainerHigh,
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.verified, size: 14, color: AppTheme.primary),
-                      const SizedBox(width: 4),
-                      Text(
-                        '${historyProvider.totalCount} Terdata',
-                        style: const TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600,
-                          color: AppTheme.onSurfaceVariant,
+      body: RefreshIndicator(
+        onRefresh: () async {
+          await historyProvider.syncWithSupabase();
+        },
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Riwayat Scan',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w600,
+                            color: AppTheme.onSurface,
+                          ),
                         ),
-                      ),
-                    ],
+                        SizedBox(height: 2),
+                        Text(
+                          'Daftar produk yang telah kamu periksa sebelumnya.',
+                          style: TextStyle(fontSize: 13, color: AppTheme.onSurfaceVariant),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
-            ),
+                  const SizedBox(width: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: AppTheme.surfaceContainerHigh,
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.verified, size: 14, color: AppTheme.primary),
+                        const SizedBox(width: 4),
+                        Text(
+                          '${historyProvider.totalCount} Terdata',
+                          style: const TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                            color: AppTheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             const SizedBox(height: 16),
 
             // Weekly Safety Pulse card
@@ -295,15 +344,21 @@ class _HistoryScreenState extends State<HistoryScreen> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Row(
-                                  children: [
-                                    const Icon(Icons.photo_camera, size: 14, color: AppTheme.outline),
-                                    const SizedBox(width: 4),
-                                    Text(
-                                      '${item.charCount} karakter • ${_formatDate(item.timestamp)}',
-                                      style: const TextStyle(fontSize: 11, color: AppTheme.onSurfaceVariant),
-                                    ),
-                                  ],
+                                Expanded(
+                                  child: Row(
+                                    children: [
+                                      const Icon(Icons.photo_camera, size: 14, color: AppTheme.outline),
+                                      const SizedBox(width: 4),
+                                      Expanded(
+                                        child: Text(
+                                          '${item.charCount} karakter • ${_formatDate(item.timestamp)}',
+                                          style: const TextStyle(fontSize: 11, color: AppTheme.onSurfaceVariant),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                                 PopupMenuButton<String>(
                                   icon: const Icon(Icons.more_vert, size: 18, color: AppTheme.outline),
@@ -349,10 +404,13 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                       Text(
                                         item.brandOrCategory ?? 'Hasil Pindai',
                                         style: const TextStyle(fontSize: 12, color: AppTheme.outline),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
                                       ),
                                     ],
                                   ),
                                 ),
+                                const SizedBox(width: 10),
                                 Container(
                                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                                   decoration: BoxDecoration(
@@ -362,6 +420,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                     borderRadius: BorderRadius.circular(12),
                                   ),
                                   child: Row(
+                                    mainAxisSize: MainAxisSize.min,
                                     children: [
                                       Icon(
                                         isItemHigh
@@ -374,7 +433,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                       ),
                                       const SizedBox(width: 4),
                                       Text(
-                                        item.riskLevel.label,
+                                        item.riskLevel.shortLabel,
                                         style: TextStyle(
                                           fontSize: 11,
                                           fontWeight: FontWeight.w600,
@@ -447,8 +506,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
           ],
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _buildFilterChip(String key, String label, int count, Color? dotColor) {
     final isSelected = _activeFilter == key;

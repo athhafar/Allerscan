@@ -1,14 +1,20 @@
 import 'dart:convert';
-import 'package:flutter/services.dart' show rootBundle;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/allergen_profile.dart';
 import '../models/scan_result.dart';
+import '../utils/uuid_util.dart';
 
 class StorageService {
   static const String _keySelectedAllergenIds = 'allerscan_selected_allergen_ids';
   static const String _keyCustomAllergens = 'allerscan_custom_allergens';
   static const String _keyScanHistory = 'allerscan_history_items';
   static const String _keyHasCompletedOnboarding = 'allerscan_has_completed_onboarding';
+  static const String _keySupabaseAnonKey = 'allerscan_supabase_anon_key';
+  static const String _keyUserId = 'allerscan_user_id';
+  static const String _keyUserName = 'allerscan_user_name';
+  static const String _keyUserEmail = 'allerscan_user_email';
+  static const String _keyCachedAllergens = 'allerscan_supabase_allergens_cache';
+  static const String _keyIsGuestMode = 'allerscan_is_guest_mode';
 
   final SharedPreferences _prefs;
 
@@ -19,20 +25,28 @@ class StorageService {
     return StorageService(prefs);
   }
 
-  // Load standard allergens from assets/allergens.json
-  Future<Map<String, AllergenDef>> loadPresetAllergens() async {
+  // Cache kamus alergen murni dari Supabase agar cepat & tetap bisa offline
+  Map<String, AllergenDef> loadCachedDatabaseAllergens() {
+    final raw = _prefs.getString(_keyCachedAllergens);
+    if (raw == null || raw.isEmpty) return {};
     try {
-      final jsonStr = await rootBundle.loadString('assets/allergens.json');
-      final Map<String, dynamic> data = json.decode(jsonStr);
+      final Map<String, dynamic> data = json.decode(raw);
       final Map<String, AllergenDef> map = {};
       data.forEach((key, val) {
         map[key] = AllergenDef.fromJson(key, val as Map<String, dynamic>);
       });
       return map;
     } catch (e) {
-      // Fallback presets if asset loading fails
       return {};
     }
+  }
+
+  Future<void> saveCachedDatabaseAllergens(Map<String, AllergenDef> map) async {
+    final Map<String, dynamic> data = {};
+    map.forEach((key, def) {
+      data[key] = def.toJson();
+    });
+    await _prefs.setString(_keyCachedAllergens, json.encode(data));
   }
 
   // Custom Allergens
@@ -49,12 +63,11 @@ class StorageService {
     await _prefs.setStringList(_keyCustomAllergens, strings);
   }
 
-  // Selected Active Allergen IDs
+  // Selected Active Allergen IDs (Default: ALG-01 Gluten, ALG-05 Kacang Tanah, ALG-07 Susu, ALG-02 Krustasea)
   List<String> loadSelectedAllergenIds() {
     final list = _prefs.getStringList(_keySelectedAllergenIds);
     if (list == null) {
-      // Default initial selection per screen design: Kacang, Susu, Gluten, Udang
-      return ['kacang_tanah', 'susu', 'gluten', 'udang'];
+      return ['ALG-01', 'ALG-05', 'ALG-07', 'ALG-02'];
     }
     return list;
   }
@@ -100,5 +113,47 @@ class StorageService {
 
   Future<void> clearHistory() async {
     await _prefs.remove(_keyScanHistory);
+  }
+
+  // Supabase Credentials & User State
+  String? getSupabaseAnonKey() {
+    return _prefs.getString(_keySupabaseAnonKey);
+  }
+
+  Future<void> saveSupabaseAnonKey(String key) async {
+    await _prefs.setString(_keySupabaseAnonKey, key.trim());
+  }
+
+  String getOrCreateUserId() {
+    String? id = _prefs.getString(_keyUserId);
+    if (id == null || !UuidUtil.isValidUuid(id)) {
+      id = UuidUtil.generate();
+      _prefs.setString(_keyUserId, id);
+    }
+    return id;
+  }
+
+  String getUserName() {
+    return _prefs.getString(_keyUserName) ?? 'Pengguna AllerScan';
+  }
+
+  Future<void> saveUserName(String name) async {
+    await _prefs.setString(_keyUserName, name);
+  }
+
+  String getUserEmail() {
+    return _prefs.getString(_keyUserEmail) ?? '';
+  }
+
+  Future<void> saveUserEmail(String email) async {
+    await _prefs.setString(_keyUserEmail, email);
+  }
+
+  bool isGuestMode() {
+    return _prefs.getBool(_keyIsGuestMode) ?? false;
+  }
+
+  Future<void> setGuestMode(bool val) async {
+    await _prefs.setBool(_keyIsGuestMode, val);
   }
 }

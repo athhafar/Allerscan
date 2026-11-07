@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../providers/profile_provider.dart';
-import '../providers/history_provider.dart';
-import '../services/allergen_matcher.dart';
 import '../theme/app_theme.dart';
-import 'result_screen.dart';
+import 'analyzing_screen.dart';
 
 class ManualInputScreen extends StatefulWidget {
   final String? initialText;
@@ -92,25 +90,17 @@ class _ManualInputScreenState extends State<ManualInputScreen> {
       return;
     }
 
-    final profile = Provider.of<ProfileProvider>(context, listen: false);
-    final history = Provider.of<HistoryProvider>(context, listen: false);
-
     final pName = _nameController.text.trim().isEmpty
         ? 'Produk tanpa nama'
         : _nameController.text.trim();
 
-    final result = AllergenMatcher.analyze(
-      text,
-      profile.activeAllergens,
-      productName: pName,
-    );
-
-    // Auto save to history
-    history.addScan(result);
-
+    // Mengalir ke AnalyzingScreen agar menikmati kecerdasan Gemini AI & pembersihan bahan otomatis
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(
-        builder: (_) => ResultScreen(result: result),
+        builder: (_) => AnalyzingScreen(
+          directText: text,
+          productName: pName,
+        ),
       ),
     );
   }
@@ -165,7 +155,7 @@ class _ManualInputScreenState extends State<ManualInputScreen> {
                     width: 24,
                     height: 24,
                     decoration: BoxDecoration(
-                      color: AppTheme.primary.withOpacity(0.15),
+                      color: AppTheme.primary.withValues(alpha: 0.15),
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(Icons.security, size: 16, color: AppTheme.primary),
@@ -240,20 +230,27 @@ class _ManualInputScreenState extends State<ManualInputScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Row(
-                        children: [
-                          Icon(Icons.format_list_bulleted, color: AppTheme.primary, size: 18),
-                          SizedBox(width: 6),
-                          Text(
-                            'Daftar Bahan / Komposisi',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: AppTheme.onSurface,
+                      const Expanded(
+                        child: Row(
+                          children: [
+                            Icon(Icons.format_list_bulleted, color: AppTheme.primary, size: 18),
+                            SizedBox(width: 6),
+                            Flexible(
+                              child: Text(
+                                'Daftar Bahan / Komposisi',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppTheme.onSurface,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
+                      const SizedBox(width: 8),
                       InkWell(
                         onTap: _pasteFromClipboard,
                         borderRadius: BorderRadius.circular(8),
